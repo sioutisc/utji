@@ -1,0 +1,63 @@
+/* ********************************************************************* *
+ *                                                                       *
+ *   =============================================================       *
+ *   Copyright 2002-2010,                                                *
+ *   Christos Sioutis <christos.sioutis@gmail.com>                       *
+ *   =============================================================       *
+ *   This software was developed during my PhD studies at:               *
+ *                                                                       *
+ *   Knowledge Based Intelligent Engineering Systems Centre (KES)        *
+ *   School of Electrical and Information Engineering                    *
+ *   University of South Australia                                       *
+ *   =============================================================       *
+ *                                                                       *
+ *   This file is part of utji.                                          *
+ *                                                                       *
+ *   utji is free software: you can redistribute it and/or               *
+ *   modify it under the terms of the GNU Lesser General Public License  *
+ *   as published by the Free Software Foundation, either version 3 of   *
+ *   the License, or (at your option) any later version.                 *
+ *                                                                       *
+ *   utji is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of      *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       *
+ *   GNU Lesser General Public License for more details.                 *
+ *                                                                       *
+ *   You should have received a copy of the GNU Lesser General Public    *
+ *   License along with utji.                                            *
+ *   If not, see <http://www.gnu.org/licenses/>.                         *
+ *                                                                       *
+ * ********************************************************************* */
+ 
+package edu.unisa.gamebots.domdefender;
+
+import edu.unisa.gamebots.utjackinterface.*;
+import edu.unisa.gamebots.domdefender.caps.explore2.*;
+import edu.unisa.gamebots.domdefender.caps.domdefend.*;
+
+public plan ExploreAndDefendPlan extends Plan
+{
+	#handles event ExploreAndDefendEvent ev;
+
+        #posts event ExploreEvent exploreEv;
+	#posts event DomDefendEvent ddEv;
+			
+	body()
+	{
+		 System.out.println("\n\n*********************************************************"); 	 
+                 System.out.println("New Mission recieved, objectives as follows:"); 	 
+                 System.out.println("\t(a) Explore " + ev.exploreNum + " nav points."); 	 
+                 System.out.println("\t(b) Defend a DOM point encountered for " + ev.defendNum + " seconds."); 	 
+                 System.out.println("*********************************************************\n"); 	 
+  	 
+                 System.out.println("\n***** Starting objective A: Explore " + ev.exploreNum + " nav points. *****\n"); 	 
+	 	 @subtask(exploreEv.explore(ev.exploreNum));
+                 System.out.println("\n***** Starting objective B: Defend a DOM point encountered for " + ev.defendNum + " seconds. *****\n"); 	 
+                 @subtask(ddEv.domDefend(ev.defendNum)); 	 
+	}
+	
+	#reasoning method fail (){
+                         System.out.println("\nMission Failed!"); 	 
+                         System.exit(1); 	 	
+	}
+}
