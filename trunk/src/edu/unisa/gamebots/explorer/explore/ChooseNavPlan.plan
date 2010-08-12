@@ -1,0 +1,72 @@
+/* ********************************************************************* *
+ *                                                                       *
+ *   =============================================================       *
+ *   Copyright 2002-2010,                                                *
+ *   Christos Sioutis <christos.sioutis@gmail.com>                       *
+ *   =============================================================       *
+ *   This software was developed during my PhD studies at:               *
+ *                                                                       *
+ *   Knowledge Based Intelligent Engineering Systems Centre (KES)        *
+ *   School of Electrical and Information Engineering                    *
+ *   University of South Australia                                       *
+ *   =============================================================       *
+ *                                                                       *
+ *   This file is part of utji.                                          *
+ *                                                                       *
+ *   utji is free software: you can redistribute it and/or               *
+ *   modify it under the terms of the GNU Lesser General Public License  *
+ *   as published by the Free Software Foundation, either version 3 of   *
+ *   the License, or (at your option) any later version.                 *
+ *                                                                       *
+ *   utji is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of      *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       *
+ *   GNU Lesser General Public License for more details.                 *
+ *                                                                       *
+ *   You should have received a copy of the GNU Lesser General Public    *
+ *   License along with utji.                                            *
+ *   If not, see <http://www.gnu.org/licenses/>.                         *
+ *                                                                       *
+ * ********************************************************************* */
+ 
+package edu.unisa.gamebots.explorer.explore;
+
+import edu.unisa.gamebots.utjackinterface.*;
+import edu.unisa.gamebots.utjackinterface.controller.*;
+import edu.unisa.gamebots.utjackinterface.caps.sync.*;
+import java.util.*;
+
+plan ChooseNavPlan extends Plan
+{
+	#handles event ChooseNavEvent ev;
+	#reads data Navs navs;
+        #uses data NavChosen chosen;
+        #uses interface UtCommands ut;
+
+	logical String id;
+	logical UtCoordinate location;
+	boolean reachable = true;
+	logical boolean viewable;
+
+        Vector locations = new Vector();
+        Random uniform = new Random();
+
+
+	
+	body()
+	{
+            do{
+                for ( Cursor c = navs.reachableNavs(id,location,reachable,viewable) ; c.next() ; )
+                    locations.add(new UtNav(id.as_string(),(UtCoordinate)location.as_object(),reachable,viewable.as_boolean()));
+
+                if(locations.size()==0){
+                    ut.rotate(65535.0/4);
+		    @sleep(1);
+		}
+            }
+            while(locations.size()==0);
+            int index = uniform.nextInt(locations.size());
+
+            chosen.add((UtNav)locations.get(index));
+	}	
+}

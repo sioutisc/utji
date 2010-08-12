@@ -1,0 +1,90 @@
+<!--
+/* ********************************************************************* *
+ *                                                                       *
+ *   =============================================================       *
+ *   Copyright 2002-2010,                                                *
+ *   Christos Sioutis <christos.sioutis@gmail.com>                       *
+ *   =============================================================       *
+ *   This software was developed during my PhD studies at:               *
+ *                                                                       *
+ *   Knowledge Based Intelligent Engineering Systems Centre (KES)        *
+ *   School of Electrical and Information Engineering                    *
+ *   University of South Australia                                       *
+ *   =============================================================       *
+ *                                                                       *
+ *   This file is part of utji.                                          *
+ *                                                                       *
+ *   utji is free software: you can redistribute it and/or               *
+ *   modify it under the terms of the GNU Lesser General Public License  *
+ *   as published by the Free Software Foundation, either version 3 of   *
+ *   the License, or (at your option) any later version.                 *
+ *                                                                       *
+ *   utji is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of      *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       *
+ *   GNU Lesser General Public License for more details.                 *
+ *                                                                       *
+ *   You should have received a copy of the GNU Lesser General Public    *
+ *   License along with utji.                                            *
+ *   If not, see <http://www.gnu.org/licenses/>.                         *
+ *                                                                       *
+ * ********************************************************************* */
+-->
+
+<project name="utji" default="dist" basedir=".">
+    <description> Author: Christos Sioutis    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="."/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="gcode"  location="gcode"/>
+  <taskdef name="jackbuild" classname="edu.unisa.jack.JackBuildTask"/>
+  
+  <!-- INITIALISATION  -->
+  <target name="init">
+    <mkdir dir="${build}"/>
+    <tstamp/>
+  </target>
+  
+  <target name="init-gcode" depends="init">
+    <!-- Create the build directory structure used by JACK -->
+    <mkdir dir="${gcode}"/>
+  </target>
+      
+  <!-- COMPILATION -->
+  <target name="compile" depends="init" description="compile the source " >
+      <jackbuild showArgs="true" recursive="true" cdestdir="${build}">
+      	<java fork="true"/>
+      </jackbuild>
+  </target>
+  
+  <!-- CLEANING --> 
+  <target name="clean-jack" description="Cleaning JACK generated JAVA files" >
+      <jackbuild recursive="true" clean="true" >
+      	<java fork="true"/>
+      </jackbuild>
+  </target>  
+  
+  <target name="clean" depends="clean-jack" description="Cleaning Folders" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>  
+  
+  <!-- DISTRIBUTING -->
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/lib"/>
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${dist}/lib/utji.jar" basedir="${build}"/>
+  </target>
+
+  <!-- OTHER -->
+  <target name="jackversion" description="jack version" >
+      <jackbuild version="true" >
+      	<java fork="true"/>
+      </jackbuild>
+  </target>
+    
+</project>

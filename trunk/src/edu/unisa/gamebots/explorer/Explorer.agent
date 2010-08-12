@@ -1,0 +1,63 @@
+/* ********************************************************************* *
+ *                                                                       *
+ *   =============================================================       *
+ *   Copyright 2002-2010,                                                *
+ *   Christos Sioutis <christos.sioutis@gmail.com>                       *
+ *   =============================================================       *
+ *   This software was developed during my PhD studies at:               *
+ *                                                                       *
+ *   Knowledge Based Intelligent Engineering Systems Centre (KES)        *
+ *   School of Electrical and Information Engineering                    *
+ *   University of South Australia                                       *
+ *   =============================================================       *
+ *                                                                       *
+ *   This file is part of utji.                                          *
+ *                                                                       *
+ *   utji is free software: you can redistribute it and/or               *
+ *   modify it under the terms of the GNU Lesser General Public License  *
+ *   as published by the Free Software Foundation, either version 3 of   *
+ *   the License, or (at your option) any later version.                 *
+ *                                                                       *
+ *   utji is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of      *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       *
+ *   GNU Lesser General Public License for more details.                 *
+ *                                                                       *
+ *   You should have received a copy of the GNU Lesser General Public    *
+ *   License along with utji.                                            *
+ *   If not, see <http://www.gnu.org/licenses/>.                         *
+ *                                                                       *
+ * ********************************************************************* */
+ 
+package edu.unisa.gamebots.explorer;
+
+import edu.unisa.gamebots.explorer.explore.*;
+import edu.unisa.gamebots.utjackinterface.*;
+import edu.unisa.gamebots.utjackinterface.caps.sync.*;
+import edu.unisa.gamebots.utjackinterface.caps.async.*;
+
+agent Explorer extends UtJackBot
+{
+	#has capability UtAsyncCap asc;
+	#has capability UtSyncCap snc;
+        #has capability ExploreCap explore;
+        
+        #handles event UtNewNavEvent;
+        #uses plan UtNewNavPlan;        
+        
+	#private data UtJackInterface ut(snc.self, snc.game, snc.players,
+                                         snc.navs, snc.movs, snc.doms,
+                                         snc.flags, snc.invs, asc.async);
+	
+	public Explorer(String name, int team, String server){
+		super(name, team);		
+		connect(ut, server);
+		say(name + "- I am in the game", true);
+	}
+	
+	#posts event ExploreEvent exploreEv;
+
+	public void explore(){
+		postEventAndWait(exploreEv.explore());
+	}		
+}

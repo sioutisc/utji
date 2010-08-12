@@ -1,0 +1,86 @@
+/* ********************************************************************* *
+ *                                                                       *
+ *   =============================================================       *
+ *   Copyright 2002-2010,                                                *
+ *   Christos Sioutis <christos.sioutis@gmail.com>                       *
+ *   =============================================================       *
+ *   This software was developed during my PhD studies at:               *
+ *                                                                       *
+ *   Knowledge Based Intelligent Engineering Systems Centre (KES)        *
+ *   School of Electrical and Information Engineering                    *
+ *   University of South Australia                                       *
+ *   =============================================================       *
+ *                                                                       *
+ *   This file is part of utji.                                          *
+ *                                                                       *
+ *   utji is free software: you can redistribute it and/or               *
+ *   modify it under the terms of the GNU Lesser General Public License  *
+ *   as published by the Free Software Foundation, either version 3 of   *
+ *   the License, or (at your option) any later version.                 *
+ *                                                                       *
+ *   utji is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of      *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       *
+ *   GNU Lesser General Public License for more details.                 *
+ *                                                                       *
+ *   You should have received a copy of the GNU Lesser General Public    *
+ *   License along with utji.                                            *
+ *   If not, see <http://www.gnu.org/licenses/>.                         *
+ *                                                                       *
+ * ********************************************************************* */
+
+package edu.unisa.gamebots.utjackinterface.caps.async;
+import edu.unisa.gamebots.utjackinterface.caps.sync.*;
+
+public capability UtAsyncCap extends Capability
+{
+	#exports data AsyncMsgs async();	
+	
+	#handles external event UtBumpEvent;
+	#handles external event UtDamageEvent;
+	#handles external event UtDieEvent;
+	#handles external event UtFallEvent;
+	#handles external event UtFinishEvent;
+	#handles external event UtHearNoiseEvent;
+	#handles external event UtHearPickupEvent;
+	#handles external event UtHitEvent;
+	#handles external event UtInventoryEvent;
+	#handles external event UtKillEvent;
+	#handles external event UtMessageEvent;
+	#handles external event UtMessageTeamEvent;
+	#handles external event UtMessageTokenizedEvent;
+	#handles external event UtPathEvent;
+	#handles external event UtProjectileEvent;
+	#handles external event UtReachEvent;
+	#handles external event UtSeeEvent;
+	#handles external event UtWallCollisionEvent;
+	#handles external event UtWeaponChangeEvent;
+	#handles external event UtZoneChangeBotEvent;
+	#handles external event UtZoneChangeFootEvent;
+	#handles external event UtZoneChangeHeadEvent;
+
+	#uses plan UtBumpPlan;
+	#uses plan UtDamagePlan;
+	#uses plan UtDiePlan;
+	#uses plan UtFallPlan;
+	#uses plan UtFinishPlan;
+	#uses plan UtHearNoisePlan;
+	#uses plan UtHearPickupPlan;
+	#uses plan UtHitPlan;
+	#uses plan UtInventoryPlan;
+	#uses plan UtKillPlan;
+	#uses plan UtMessagePlan;
+	#uses plan UtMessageTeamPlan;
+	#uses plan UtMessageTokenizedPlan;
+	#uses plan UtPathPlan;
+	#uses plan UtProjectilePlan;
+	#uses plan UtReachPlan;
+	#uses plan UtSeePlan;
+	#uses plan UtWallCollisionPlan;
+	#uses plan UtWeaponChangePlan;
+	#uses plan UtZoneChangeBotPlan;
+	#uses plan UtZoneChangeFootPlan;
+	#uses plan UtZoneChangeHeadPlan;
+
+        #imports data Navs navs();
+}

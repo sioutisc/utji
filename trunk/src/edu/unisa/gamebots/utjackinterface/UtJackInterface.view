@@ -1,0 +1,183 @@
+/* ********************************************************************* *
+ *                                                                       *
+ *   =============================================================       *
+ *   Copyright 2002-2010,                                                *
+ *   Christos Sioutis <christos.sioutis@gmail.com>                       *
+ *   =============================================================       *
+ *   This software was developed during my PhD studies at:               *
+ *                                                                       *
+ *   Knowledge Based Intelligent Engineering Systems Centre (KES)        *
+ *   School of Electrical and Information Engineering                    *
+ *   University of South Australia                                       *
+ *   =============================================================       *
+ *                                                                       *
+ *   This file is part of utji.                                          *
+ *                                                                       *
+ *   utji is free software: you can redistribute it and/or               *
+ *   modify it under the terms of the GNU Lesser General Public License  *
+ *   as published by the Free Software Foundation, either version 3 of   *
+ *   the License, or (at your option) any later version.                 *
+ *                                                                       *
+ *   utji is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of      *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       *
+ *   GNU Lesser General Public License for more details.                 *
+ *                                                                       *
+ *   You should have received a copy of the GNU Lesser General Public    *
+ *   License along with utji.                                            *
+ *   If not, see <http://www.gnu.org/licenses/>.                         *
+ *                                                                       *
+ * ********************************************************************* */
+
+package edu.unisa.gamebots.utjackinterface;
+import edu.unisa.gamebots.utjackinterface.controller.*;
+import edu.unisa.gamebots.utjackinterface.caps.sync.*;
+import edu.unisa.gamebots.utjackinterface.caps.async.*;
+import java.util.Iterator;
+
+public view UtJackInterface implements UtJackView
+{
+	UtController ut = null;
+	public int botTeam = -1;
+	public String utServer = null;
+	public String botName = null;
+	boolean connected = false;
+	
+	//sync beliefsets
+	#uses data Self self;
+	#uses data Game game;
+	#uses data Players players;
+	#uses data Navs navs;
+	#uses data Movs movs;
+	#uses data Doms doms;
+	#uses data Flags flags;
+	#uses data Invs invs;
+	
+	//async beliefset
+	#uses data AsyncMsgs async;
+	
+	//added for updating the viewable parameter of some beliefsets
+	public UtSyncInfo prevSync;
+	public UtSyncInfo currSync;
+	
+	public UtMessageProcessing processing;
+
+	public boolean connectToServer(String server, String name, int team)
+	{
+		processing = new UtMessageProcessing(async,self,game,players,navs,movs,doms,flags,invs);
+		utServer = server;
+		botName = name;
+		botTeam = team;
+		
+		ut = new UtController(name, team);
+		ut.setJackView(this);
+		connected = ut.connectToServer(server);
+		return(connected);
+	}
+
+        public void disconnect()
+        {
+                ut.disconnect();
+        }
+
+
+	//commands for UT
+	public void setWalk(boolean walk)
+	{
+		ut.setWalk(walk);
+	}
+	
+	public void stop()
+	{
+		ut.stop();
+	}
+	
+	public void jump()
+	{
+		ut.jump();
+	}
+	
+	public void runTo(String target)
+	{
+		ut.runTo(target);
+	}
+	
+	public void runTo(UtCoordinate location)
+	{
+		ut.runTo(location.x, location.y, location.z);
+	}
+	
+	public void strafe(UtCoordinate location, String target)
+	{
+		ut.strafe(location.x, location.y, location.z, target);
+	}
+
+	public void turnTo(UtCoordinate position)
+	{
+		ut.turnTo(position.x, position.y, position.z);
+	}
+	
+	public void turnToLoc(UtCoordinate location)
+	{
+		ut.turnToLoc(location.x, location.y, location.z);
+	}
+		
+	public void rotate(double amount)
+	{
+		ut.rotate(amount);
+	}
+
+	public void shoot()
+	{
+		ut.shoot();
+	}
+	
+	public void shoot(UtCoordinate location, String target, boolean alt)
+	{
+		ut.shoot(location.x, location.y, location.z, target, alt);
+	}
+
+	public void shoot(String target, boolean alt)
+	{
+		ut.shoot(target, alt);
+	}
+
+
+	public void changeWeapon(String id)
+	{
+		ut.changeWeapon(id);
+	}
+	
+	public void stopShoot()
+	{
+		ut.stopShoot();
+	}
+	
+	public void checkReach(String id, UtCoordinate from)
+	{
+		ut.checkReach(id, from.x, from.y, from.z);
+	}
+
+	public void checkReach(String target, String id)
+	{
+		ut.checkReach(id, target);
+	}
+	
+	public void getPath(UtCoordinate location, String id)
+	{
+		ut.getPath(id, location.x, location.y, location.z);
+	}
+	
+	public void say(String msg, boolean global)
+	{
+		ut.say(msg, global);
+	}
+	
+	public void processAsyncMessage(UtAsyncInfo asyncm){
+		processing.processAsyncMessage(asyncm);
+	}
+	
+	public void processSyncMessage(UtSyncInfo sync)	{
+		processing.processSyncMessage(sync);
+	}	
+}
