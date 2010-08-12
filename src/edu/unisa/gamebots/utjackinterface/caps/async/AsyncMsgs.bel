@@ -1,0 +1,232 @@
+/* ********************************************************************* *
+ *                                                                       *
+ *   =============================================================       *
+ *   Copyright 2002-2010,                                                *
+ *   Christos Sioutis <christos.sioutis@gmail.com>                       *
+ *   =============================================================       *
+ *   This software was developed during my PhD studies at:               *
+ *                                                                       *
+ *   Knowledge Based Intelligent Engineering Systems Centre (KES)        *
+ *   School of Electrical and Information Engineering                    *
+ *   University of South Australia                                       *
+ *   =============================================================       *
+ *                                                                       *
+ *   This file is part of utji.                                          *
+ *                                                                       *
+ *   utji is free software: you can redistribute it and/or               *
+ *   modify it under the terms of the GNU Lesser General Public License  *
+ *   as published by the Free Software Foundation, either version 3 of   *
+ *   the License, or (at your option) any later version.                 *
+ *                                                                       *
+ *   utji is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of      *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       *
+ *   GNU Lesser General Public License for more details.                 *
+ *                                                                       *
+ *   You should have received a copy of the GNU Lesser General Public    *
+ *   License along with utji.                                            *
+ *   If not, see <http://www.gnu.org/licenses/>.                         *
+ *                                                                       *
+ * ********************************************************************* */
+
+package edu.unisa.gamebots.utjackinterface.caps.async;
+import edu.unisa.gamebots.utjackinterface.controller.*;
+
+public beliefset AsyncMsgs extends ClosedWorld
+{
+	#key field String msgType;
+	#value field String gameType;
+	#value field String level;
+	#value field int timeLimit;
+	#value field int fragLimit;
+	#value field double goalTeamScore;
+	#value field int maxTeams;
+	#value field int maxTeamSize;
+	#value field String id; 
+	#value field String strClass;
+	#value field String strString;
+	#value field UtCoordinate location;
+	#value field UtCoordinate velocity;
+	#value field int team;
+	#value field String weapon;
+	#value field String sender;
+	#value field String type;
+	#value field UtCoordinate normal;
+	#value field boolean fell;
+	#value field String player;
+	#value field String source;
+	#value field UtCoordinate rotation;
+	#value field UtPlayer utPlayer;
+	#value field double impactTime;
+	#value field UtCoordinate direction;
+	#value field String killer;
+	#value field String damageType;
+	#value field int damage;
+	#value field String instigator;
+	#value field UtPath path;
+	#value field boolean reachable;
+	#value field UtCoordinate from;
+	
+	#indexed query asyncMsg(	String msgType, 		logical String gameType, 	logical String level,
+					logical int timeLimit, 		logical int fragLimit, 		logical double goalTeamScore,
+					logical int maxTeams, 		logical int maxTeamSize, 	logical String id, 
+					logical String strClass, 	logical String strString, 	logical UtCoordinate location,
+					logical UtCoordinate velocity, 	logical int team, 		logical String weapon,
+					logical String sender, 		logical String type, 		logical UtCoordinate normal,
+					logical boolean fell, 		logical String player, 		logical String source,
+					logical UtCoordinate rotation, 	logical UtPlayer utPlayer, 	logical double impactTime,
+					logical UtCoordinate direction, logical String killer, 		logical String damageType,
+					logical int damage, 		logical String instigator, 	logical UtPath path, 
+					logical boolean reachable, 	logical UtCoordinate from	);
+
+	
+	#posts event UtInventoryEvent inv;
+	#posts event UtMessageEvent msg;
+	#posts event UtMessageTeamEvent mte;
+	#posts event UtMessageTokenizedEvent mto;
+	#posts event UtZoneChangeFootEvent zcf;
+	#posts event UtZoneChangeHeadEvent zch;
+	#posts event UtZoneChangeBotEvent zcb;
+	#posts event UtWeaponChangeEvent wch;
+	#posts event UtWallCollisionEvent wco;
+	#posts event UtFallEvent fal;
+	#posts event UtBumpEvent bum;
+	#posts event UtHearPickupEvent hrp;
+	#posts event UtHearNoiseEvent hrn;
+	#posts event UtSeeEvent see;
+	#posts event UtProjectileEvent prj;
+	#posts event UtKillEvent kil;
+	#posts event UtDieEvent die;
+	#posts event UtDamageEvent dam;
+	#posts event UtHitEvent hit;
+	#posts event UtPathEvent pth;
+	#posts event UtReachEvent rch;
+	#posts event UtFinishEvent fin;
+
+	
+	public void modfact(Tuple t, BeliefState is, Tuple knocked, Tuple negated)
+	{
+		String msgType;
+		
+		AsyncMsgs__Tuple ast = (AsyncMsgs__Tuple) t;
+		msgType = ast.msgType;
+		
+		if(msgType.equals(UtControllerConstants.ADD_INV))
+			postEvent(inv.addedInventory(ast.id, ast.strClass));
+		else if(msgType.equals(UtControllerConstants.VOICE_MSG))
+			postEvent(msg.recievedMessage(ast.strString));
+		else if(msgType.equals(UtControllerConstants.VOICE_MSG_TEAM))
+			postEvent(mte.recievedMessageTeam(ast.strString));
+		else if(msgType.equals(UtControllerConstants.VOICE_COMMAND))
+			postEvent(mto.recievedMessageTokenized(ast.sender, ast.type, ast.id));
+		else if(msgType.equals(UtControllerConstants.ZONE_CHANGE_FEET))
+			postEvent(zcf.zoneChangeFoot(ast.id));
+		else if(msgType.equals(UtControllerConstants.ZONE_CHANGE_HEAD))
+			postEvent(zch.zoneChangeHead(ast.id));
+		else if(msgType.equals(UtControllerConstants.ZONE_CHANGE_BOT))
+			postEvent(zcb.zoneChangeBot(ast.id));
+		else if(msgType.equals(UtControllerConstants.CHANGE_WEAPON))
+			postEvent(wch.weaponChange(ast.id, ast.strClass));
+		else if(msgType.equals(UtControllerConstants.WALL))
+			postEvent(wco.wallCollision(ast.id, ast.normal, ast.location));
+		else if(msgType.equals(UtControllerConstants.FALL))
+			postEvent(fal.fall(ast.fell, ast.location));
+		else if(msgType.equals(UtControllerConstants.BUMP))
+			postEvent(bum.bump(ast.id, ast.location));
+		else if(msgType.equals(UtControllerConstants.HEAR_PICKUP))
+			postEvent(hrp.hearPickup(ast.player));
+		else if(msgType.equals(UtControllerConstants.HEAR_NOISE))
+			postEvent(hrn.hearNoise(ast.source));
+		else if(msgType.equals(UtControllerConstants.SEE))
+			postEvent(see.see(ast.id, ast.rotation, ast.location, ast.velocity, ast.team, ast.reachable, ast.weapon));
+		else if(msgType.equals(UtControllerConstants.PROJECTILE))
+			postEvent(prj.projectile(ast.impactTime, ast.direction));
+		else if(msgType.equals(UtControllerConstants.KILLED))
+			postEvent(kil.kill(ast.id, ast.killer, ast.damageType));
+		else if(msgType.equals(UtControllerConstants.DIED))
+			postEvent(die.die(ast.killer, ast.damageType));
+		else if(msgType.equals(UtControllerConstants.DAMAGE))
+			postEvent(dam.damage(ast.damage, ast.damageType));
+		else if(msgType.equals(UtControllerConstants.HIT))
+			postEvent(hit.hit(ast.id, ast.damage, ast.damageType));
+		else if(msgType.equals(UtControllerConstants.PATH_MSG))
+			postEvent(pth.path(ast.id, ast.path));
+		else if(msgType.equals(UtControllerConstants.REACH))
+			postEvent(rch.reach(ast.id, ast.reachable, ast.from));
+		else if(msgType.equals(UtControllerConstants.GAME_OVER))
+			postEvent(fin.finish());
+		else		
+			System.out.println("Error in AsyncMsgs beliefset, cannot create appropriate event, unknown async message type: " + ast.msgType);
+	}
+	
+	#function query public UtAsyncInfo getInfo(String msgType){
+		logical String gameType;
+		logical String level;
+		logical int timeLimit;
+		logical int fragLimit;
+		logical double goalTeamScore;
+		logical int maxTeams;
+		logical int maxTeamSize;
+		logical String id; 
+		logical String strClass;
+		logical String strString;
+		logical UtCoordinate location;
+		logical UtCoordinate velocity;
+		logical int team;
+		logical String weapon;
+		logical String sender;
+		logical String type;
+		logical UtCoordinate normal;
+		logical boolean fell;
+		logical String player;
+		logical String source;
+		logical UtCoordinate rotation;
+		logical UtPlayer utPlayer;
+		logical double impactTime;
+		logical UtCoordinate direction;
+		logical String killer;
+		logical String damageType;
+		logical int damage;
+		logical String instigator;
+		logical UtPath path;
+		logical boolean reachable;
+		logical UtCoordinate from;
+		
+		
+		
+		
+		Cursor c = asyncMsg(msgType, gameType, level, timeLimit, fragLimit,
+				 goalTeamScore, maxTeams, maxTeamSize,
+				 id, strClass, strString, location, velocity,
+				 team, weapon, sender, type, normal, fell,
+				 player, source, rotation, utPlayer,
+				 impactTime, direction, killer, damageType,
+				 damage, instigator, path, reachable, from);
+		if(c.next()){
+			return new UtAsyncInfo(msgType, gameType.as_string(),
+				level.as_string(), timeLimit.as_int(),
+				fragLimit.as_int(), goalTeamScore.as_double(),
+				maxTeams.as_int(), maxTeamSize.as_int(),
+				id.as_string(), strClass.as_string(),
+				strString.as_string(),
+				(UtCoordinate) location.as_object(),
+				(UtCoordinate) velocity.as_object(),
+				team.as_int(), weapon.as_string(),
+				sender.as_string(), type.as_string(),
+				(UtCoordinate) normal.as_object(),
+				fell.as_boolean(), player.as_string(),
+				source.as_string(),
+				(UtCoordinate) rotation.as_object(),
+				(UtPlayer) utPlayer.as_object(),
+				impactTime.as_double(),
+				(UtCoordinate) direction.as_object(),
+				killer.as_string(), damageType.as_string(),
+				damage.as_int(), instigator.as_string(),
+				(UtPath) path.as_object(),
+				reachable.as_boolean(),
+				(UtCoordinate) from.as_object());
+		}
+		return null;
+	}
+
+}

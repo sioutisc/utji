@@ -1,0 +1,97 @@
+/* ********************************************************************* *
+ *                                                                       *
+ *   =============================================================       *
+ *   Copyright 2002-2010,                                                *
+ *   Christos Sioutis <christos.sioutis@gmail.com>                       *
+ *   =============================================================       *
+ *   This software was developed during my PhD studies at:               *
+ *                                                                       *
+ *   Knowledge Based Intelligent Engineering Systems Centre (KES)        *
+ *   School of Electrical and Information Engineering                    *
+ *   University of South Australia                                       *
+ *   =============================================================       *
+ *                                                                       *
+ *   This file is part of utji.                                          *
+ *                                                                       *
+ *   utji is free software: you can redistribute it and/or               *
+ *   modify it under the terms of the GNU Lesser General Public License  *
+ *   as published by the Free Software Foundation, either version 3 of   *
+ *   the License, or (at your option) any later version.                 *
+ *                                                                       *
+ *   utji is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of      *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       *
+ *   GNU Lesser General Public License for more details.                 *
+ *                                                                       *
+ *   You should have received a copy of the GNU Lesser General Public    *
+ *   License along with utji.                                            *
+ *   If not, see <http://www.gnu.org/licenses/>.                         *
+ *                                                                       *
+ * ********************************************************************* */
+
+package edu.unisa.gamebots.utjackinterface.caps.sync;
+
+import edu.unisa.gamebots.utjackinterface.controller.*;
+import java.util.*;
+
+public beliefset Invs extends ClosedWorld
+{
+	#key field String id;
+	#value field UtCoordinate location;
+	#value field boolean reachable;
+	#value field String invClass;
+	#value field boolean viewable;
+
+	
+	#indexed query invsInfo(logical String id, logical UtCoordinate location,
+				logical boolean reachable, logical String invClass, logical boolean viewable);
+
+	#indexed query invsInfo(String id, logical UtCoordinate location,
+				logical boolean reachable, logical String invClass, logical boolean viewable);
+
+	#indexed query reachableInvs(logical String id, logical UtCoordinate location,
+				     boolean reachable, logical String invClass, logical boolean viewable);
+
+	#indexed query reachableInvs(logical String id, logical UtCoordinate location,
+				     boolean reachable, logical String invClass, boolean viewable);
+
+        #function query public List getInfo(){
+            logical String id;
+            logical UtCoordinate location;
+            logical boolean reachable;
+            logical String invClass;
+            logical boolean viewable;
+            LinkedList list = new LinkedList();
+            Cursor c = invsInfo(id,location,reachable,invClass,viewable);
+            while(c.next()){
+                list.add(new UtInv(id.as_string(),(UtCoordinate)location.as_object(),reachable.as_boolean(),invClass.as_string(),viewable.as_boolean()));
+            }
+            return list;
+        }
+
+        #function query public List getReachableNavs(boolean reachable){
+            logical String id;
+            logical UtCoordinate location;
+            logical String invClass;
+            logical boolean viewable;
+            LinkedList list = new LinkedList();
+            Cursor c = reachableInvs(id,location,reachable,invClass,viewable);
+            while(c.next()){
+                list.add(new UtInv(id.as_string(),(UtCoordinate)location.as_object(),reachable,invClass.as_string(),viewable.as_boolean()));
+            }
+            return list;
+        }
+
+        #function query public List getReachableNavs(boolean reachable, boolean viewable){
+            logical String id;
+            logical UtCoordinate location;
+            logical String invClass;
+            LinkedList list = new LinkedList();
+            Cursor c = reachableInvs(id,location,reachable,invClass,viewable);
+            while(c.next()){
+                list.add(new UtInv(id.as_string(),(UtCoordinate)location.as_object(),reachable,invClass.as_string(),viewable));
+            }
+            return list;
+        }
+
+}

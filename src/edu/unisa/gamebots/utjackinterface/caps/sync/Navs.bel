@@ -1,0 +1,157 @@
+/* ********************************************************************* *
+ *                                                                       *
+ *   =============================================================       *
+ *   Copyright 2002-2010,                                                *
+ *   Christos Sioutis <christos.sioutis@gmail.com>                       *
+ *   =============================================================       *
+ *   This software was developed during my PhD studies at:               *
+ *                                                                       *
+ *   Knowledge Based Intelligent Engineering Systems Centre (KES)        *
+ *   School of Electrical and Information Engineering                    *
+ *   University of South Australia                                       *
+ *   =============================================================       *
+ *                                                                       *
+ *   This file is part of utji.                                          *
+ *                                                                       *
+ *   utji is free software: you can redistribute it and/or               *
+ *   modify it under the terms of the GNU Lesser General Public License  *
+ *   as published by the Free Software Foundation, either version 3 of   *
+ *   the License, or (at your option) any later version.                 *
+ *                                                                       *
+ *   utji is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of      *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       *
+ *   GNU Lesser General Public License for more details.                 *
+ *                                                                       *
+ *   You should have received a copy of the GNU Lesser General Public    *
+ *   License along with utji.                                            *
+ *   If not, see <http://www.gnu.org/licenses/>.                         *
+ *                                                                       *
+ * ********************************************************************* */
+
+package edu.unisa.gamebots.utjackinterface.caps.sync;
+
+import edu.unisa.gamebots.utjackinterface.controller.*;
+import edu.unisa.gamebots.utjackinterface.caps.sync.*;
+import java.util.*;
+
+public beliefset Navs extends OpenWorld
+{
+	#key field String id;
+	#value field UtCoordinate location;
+	#value field boolean reachable;
+	#value field boolean viewable;
+
+	#indexed query allNavs(logical String id, logical UtCoordinate location, logical boolean reachable, logical boolean viewable);	
+	#indexed query reachableNavs(logical String id, logical UtCoordinate location, boolean reachable, logical boolean viewable);
+	#indexed query specificNav(String id, logical UtCoordinate location, logical boolean reachable, logical boolean viewable);
+	#indexed query viewableNavs(logical String id, logical UtCoordinate location, logical boolean reachable, boolean viewable);
+	#indexed query reachableNavs(logical String id, logical UtCoordinate location, boolean reachable, boolean viewable);
+	#indexed query get(String id, logical UtCoordinate location, logical boolean reachable, logical boolean viewable);	
+
+	#posts event UtNewNavEvent ev;
+	
+	#function query public UtCoordinate getClosestReachableNav(UtCoordinate currentLocation)
+	{
+            UtNav closest = closestReachableNav(currentLocation);
+            if(closest==null)
+                return null;
+            return closest.location;
+	}
+
+	#function query public UtNav closestReachableNav(UtCoordinate currentLocation)
+	{
+            List reachableNavs = getReachableNavs(true);
+            return closest(reachableNavs,currentLocation);
+	}
+
+        private UtNav closest(List navs, UtCoordinate currentLocation){
+            double distance, tmpDis;
+            UtNav closest, tmpNav;
+
+            if(navs.size()==0)
+                return null;
+            closest = (UtNav) navs.get(0);
+            distance = currentLocation.distanceFrom(closest.location);
+            for(int i=0; i<navs.size(); i++){
+                tmpNav = (UtNav) navs.get(i);
+                tmpDis = currentLocation.distanceFrom(tmpNav.location);
+                if(tmpDis<distance){
+                    distance = tmpDis;
+                    closest = tmpNav;
+                }
+            }
+            return closest;
+        }
+
+	#function query public UtNav closeToWhat(UtCoordinate currentLocation)
+	{
+            UtNav closest = getClosestNav(currentLocation);
+            if(closest!=null && currentLocation.closeTo(closest.location))
+                return closest;
+            return null;
+	}
+
+
+	#function query public UtNav getClosestNav(UtCoordinate currentLocation)
+	{
+            return(closest(getInfo(),currentLocation));
+	}
+
+	public void newfact(Tuple t, BeliefState is, BeliefState was)
+	{
+		if(was.equals(Cursor.UNKNOWN))
+		{
+			Navs__Tuple nt = (Navs__Tuple) t;
+			postEvent(ev.newNav(nt.id, nt.location));
+		}
+	}
+
+        #function query public UtNav getNav(String id){
+            logical UtCoordinate location;
+            logical boolean reachable;
+            logical boolean viewable;
+            Cursor c = get(id,location,reachable,viewable);
+            while(c.next()){
+                return new UtNav(id,(UtCoordinate)location.as_object(),reachable.as_boolean(),viewable.as_boolean());
+            }
+            return null;
+        }
+
+        #function query public List getInfo(){
+            logical String id;
+            logical UtCoordinate location;
+            logical boolean reachable;
+            logical boolean viewable;
+            LinkedList list = new LinkedList();
+            Cursor c = allNavs(id,location,reachable,viewable);
+            while(c.next()){
+                list.add(new UtNav(id.as_string(),(UtCoordinate)location.as_object(),reachable.as_boolean(),viewable.as_boolean()));
+            }
+            return list;
+        }
+
+        #function query public List getReachableNavs(boolean reachable, boolean viewable){
+            logical String id;
+            logical UtCoordinate location;
+            LinkedList list = new LinkedList();
+            Cursor c = reachableNavs(id,location,true,viewable);
+            while(c.next()){
+                list.add(new UtNav(id.as_string(),(UtCoordinate)location.as_object(),reachable,viewable));
+            }
+            return list;
+        }        
+
+        #function query public List getReachableNavs(boolean reachable){
+            logical String id;
+            logical UtCoordinate location;
+            logical boolean viewable;
+            LinkedList list = new LinkedList();
+            Cursor c = reachableNavs(id,location,true,viewable);
+            while(c.next()){
+                list.add(new UtNav(id.as_string(),(UtCoordinate)location.as_object(),reachable,viewable.as_boolean()));
+            }
+            return list;
+        }        
+
+}

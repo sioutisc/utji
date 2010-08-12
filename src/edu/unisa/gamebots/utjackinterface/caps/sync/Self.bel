@@ -1,0 +1,116 @@
+/* ********************************************************************* *
+ *                                                                       *
+ *   =============================================================       *
+ *   Copyright 2002-2010,                                                *
+ *   Christos Sioutis <christos.sioutis@gmail.com>                       *
+ *   =============================================================       *
+ *   This software was developed during my PhD studies at:               *
+ *                                                                       *
+ *   Knowledge Based Intelligent Engineering Systems Centre (KES)        *
+ *   School of Electrical and Information Engineering                    *
+ *   University of South Australia                                       *
+ *   =============================================================       *
+ *                                                                       *
+ *   This file is part of utji.                                          *
+ *                                                                       *
+ *   utji is free software: you can redistribute it and/or               *
+ *   modify it under the terms of the GNU Lesser General Public License  *
+ *   as published by the Free Software Foundation, either version 3 of   *
+ *   the License, or (at your option) any later version.                 *
+ *                                                                       *
+ *   utji is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of      *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       *
+ *   GNU Lesser General Public License for more details.                 *
+ *                                                                       *
+ *   You should have received a copy of the GNU Lesser General Public    *
+ *   License along with utji.                                            *
+ *   If not, see <http://www.gnu.org/licenses/>.                         *
+ *                                                                       *
+ * ********************************************************************* */
+
+package edu.unisa.gamebots.utjackinterface.caps.sync;
+
+import edu.unisa.gamebots.utjackinterface.controller.*;
+
+public beliefset Self extends ClosedWorld
+{
+	#value field String id;
+	#value field boolean altFiring;
+	#value field UtCoordinate velocity;
+	#value field String name;
+	#value field UtCoordinate location;
+	#value field int team;
+	#value field String weapon;
+	#value field int health;
+	#value field int armor;
+	#value field int currentAmmo;
+	#value field UtCoordinate rotation;
+
+	
+	#linear query selfInfo(	logical String id,		logical boolean altFiring,
+				logical UtCoordinate velocity,	logical String name,
+				logical UtCoordinate location,	logical int team,
+				logical String weapon,		logical int health,
+				logical int armor,		logical int currentAmmo,
+				logical UtCoordinate rotation);
+
+        #function query public UtSelf getInfo(){
+		logical String my_id, my_name, my_weapon;
+		logical boolean my_altFiring;
+		logical UtCoordinate my_velocity, my_location, my_rotation;
+		logical int my_team, my_health, my_armor, my_currentAmmo;
+		UtCoordinate currentLocation;
+		Cursor c = selfInfo(my_id, my_altFiring, my_velocity, my_name, my_location, my_team, my_weapon, my_health, my_armor, my_currentAmmo, my_rotation);
+		if(c.next()){
+                    return new UtSelf(my_altFiring.as_boolean(),(String)my_id.as_object(),(UtCoordinate)my_velocity.as_object(),
+                                       (String)my_name.as_object(),(UtCoordinate)my_location.as_object(),my_team.as_int(),
+                                       (String)my_weapon.as_object(),my_health.as_int(),my_armor.as_int(),my_currentAmmo.as_int(),
+                                       (UtCoordinate)my_rotation.as_object());
+		}
+		return null;
+        }
+							
+	#function query public boolean amIHere(UtCoordinate targetLocation)
+	{
+		logical String my_id, my_name, my_weapon;
+		logical boolean my_altFiring;
+		logical UtCoordinate my_velocity, my_location, my_rotation;
+		logical int my_team, my_health, my_armor, my_currentAmmo;
+		UtCoordinate currentLocation;
+		boolean equal = false;
+		
+		Cursor c = selfInfo(my_id, my_altFiring, my_velocity, my_name, my_location, my_team, my_weapon, my_health, my_armor, my_currentAmmo, my_rotation);
+		while (c.next())
+		{
+			currentLocation = (UtCoordinate) my_location.as_object();
+			if (currentLocation.closeTo(targetLocation))
+				return true;
+			break;
+		}
+		return false;
+	}
+
+	#function query public UtCoordinate whereAmI()
+	{
+		logical String my_id, my_name, my_weapon;
+		logical boolean my_altFiring;
+		logical UtCoordinate my_velocity, my_location, my_rotation;
+		logical int my_team, my_health, my_armor, my_currentAmmo;
+		UtCoordinate currentLocation;
+		boolean equal = false;
+		
+		Cursor c = selfInfo(my_id, my_altFiring, my_velocity, my_name, my_location, my_team, my_weapon, my_health, my_armor, my_currentAmmo, my_rotation);
+		c.next();
+		return((UtCoordinate) my_location.as_object());
+	}
+
+        /*public void moddb(){
+            try{
+            System.out.println(getInfo());
+            }
+            catch(Exception e){
+                System.out.println(e);
+            }
+        }*/
+}

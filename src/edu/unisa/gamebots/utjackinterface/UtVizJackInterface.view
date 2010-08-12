@@ -1,0 +1,87 @@
+/* ********************************************************************* *
+ *                                                                       *
+ *   =============================================================       *
+ *   Copyright 2002-2010,                                                *
+ *   Christos Sioutis <christos.sioutis@gmail.com>                       *
+ *   =============================================================       *
+ *   This software was developed during my PhD studies at:               *
+ *                                                                       *
+ *   Knowledge Based Intelligent Engineering Systems Centre (KES)        *
+ *   School of Electrical and Information Engineering                    *
+ *   University of South Australia                                       *
+ *   =============================================================       *
+ *                                                                       *
+ *   This file is part of utji.                                          *
+ *                                                                       *
+ *   utji is free software: you can redistribute it and/or               *
+ *   modify it under the terms of the GNU Lesser General Public License  *
+ *   as published by the Free Software Foundation, either version 3 of   *
+ *   the License, or (at your option) any later version.                 *
+ *                                                                       *
+ *   utji is distributed in the hope that it will be useful,             *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of      *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       *
+ *   GNU Lesser General Public License for more details.                 *
+ *                                                                       *
+ *   You should have received a copy of the GNU Lesser General Public    *
+ *   License along with utji.                                            *
+ *   If not, see <http://www.gnu.org/licenses/>.                         *
+ *                                                                       *
+ * ********************************************************************* */
+ 
+package edu.unisa.gamebots.utjackinterface;
+import edu.unisa.gamebots.utjackinterface.controller.*;
+import edu.unisa.gamebots.utjackinterface.caps.sync.*;
+import edu.unisa.gamebots.utjackinterface.caps.async.*;
+
+import java.util.Iterator;
+
+public view UtVizJackInterface implements UtJackView
+{
+	UtController ut = null;
+	public String utServer = null;
+	boolean connected = false;
+	
+	//sync beliefsets
+	#uses data Self self;
+	#uses data Game game;
+	#uses data Players players;
+	#uses data Navs navs;
+	#uses data Movs movs;
+	#uses data Doms doms;
+	#uses data Flags flags;
+	#uses data Invs invs;
+	
+	//async beliefset
+	#uses data AsyncMsgs async;
+	
+	//added for updating the viewable parameter of some beliefsets
+	public UtSyncInfo prevSync;
+	public UtSyncInfo currSync;
+	
+	public UtMessageProcessing processing;
+	
+	public boolean connectToServer(String server)
+	{
+		processing = new UtMessageProcessing(async,self,game,players,navs,movs,doms,flags,invs);
+		utServer = server;
+		ut = new UtController("not required", 0 ,3001);
+		ut.setJackView(this);
+		connected = ut.connectToServer(server);
+		return(connected);
+	}
+
+        public void disconnect()
+        {
+                ut.disconnect();
+        }
+
+	public void processAsyncMessage(UtAsyncInfo asyncm){
+		processing.processAsyncMessage(asyncm);
+	}
+	
+	public void processSyncMessage(UtSyncInfo sync)	{
+		processing.processSyncMessage(sync);
+	}	
+
+}
